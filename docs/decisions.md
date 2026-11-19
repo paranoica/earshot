@@ -214,3 +214,14 @@ Date: 2026-11-19 · Decided by: session, accepted by owner
   old recordings; stage 2 daemon and extension; stage 3 web and sharing; stage 4 MCP and bedrock
   link; stage 5 VPS and backups; then post-MVP. See [roadmap.md](roadmap.md).
 - Consequences: the pipeline is tested on real old calls before the daemon exists.
+
+<!-- @anchor decision:backups -->
+### D-023 — Monthly backup, encrypted with age, kept on the same VPS
+Date: 2026-11-19 · Decided by: owner (frequency, place), session (encryption)
+- Context: the owner wants a monthly backup on the same VPS and no disk or archive encryption;
+  the details were left to the session.
+- Decision: once a month the database (through SQLite's backup API) and the call files are packed
+  and encrypted with age to a key whose private half stays off the VPS; the archive is kept on the
+  VPS. The archive itself is not encrypted at rest.
+- Consequences: a backup copied off the VPS is unreadable without the owner's key; the backup does
+  not protect against losing the VPS itself, which the owner accepted.

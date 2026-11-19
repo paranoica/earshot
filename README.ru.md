@@ -52,7 +52,7 @@ VPS хватает CPU), gpu-screen-recorder для видео.
 ```
 cargo test --workspace                       # демон
 uv run --directory server pytest             # сервер
-(cd tools/checks && uvx pytest)              # проверки репозитория
+(cd tools/checks && uvx pytest@9.1.1)        # проверки репозитория
 git config core.hooksPath .githooks          # проверки перед коммитом
 ```
 

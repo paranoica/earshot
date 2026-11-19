@@ -52,10 +52,12 @@ jobs:
             base="$(git rev-list --max-parents=0 HEAD | tail -1)"
           fi
           python plugins/bedrock/bin/bedrock check --base "$base" --no-network --allow-test-changes
+          subjects="$(git log --no-merges --format=%s "$base..HEAD")"
           bad=0
           while IFS= read -r subject; do
-            python plugins/bedrock/bin/bedrock check --no-network --message "$subject" || bad=1
-          done < <(git log --format=%s "$base..HEAD")
+            [ -n "$subject" ] || continue
+            python plugins/bedrock/bin/bedrock check --no-network --message="$subject" || bad=1
+          done <<< "$subjects"
           exit "$bad"
 
   rust:
