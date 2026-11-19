@@ -26,3 +26,64 @@ jobs:
       - run: black --check .
       - run: pytest
       - run: python plugins/bedrock/scripts/skillcheck.py --strict
+
+  repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install pytest==9.1.1
+      - name: No real media in git
+        run: python tools/checks/no_media.py
+      - name: Guard tests
+        working-directory: tools/checks
+        run: pytest
+      - name: Bedrock code check and commit messages since the last push
+        env:
+          BEFORE: ${{ github.event.before }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          base="${PR_BASE:-$BEFORE}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base="$(git rev-list --max-parents=0 HEAD | tail -1)"
+          fi
+          python plugins/bedrock/bin/bedrock check --base "$base" --no-network
+          bad=0
+          while IFS= read -r subject; do
+            if ! printf '%s' "$subject" | grep -Eq '^(feat|fix|refactor|docs|test|chore|ci)\([a-z0-9-]+\): .+$' \
+              || [ "${#subject}" -gt 72 ]; then
+              echo "bad commit subject: $subject"
+              bad=1
+            fi
+          done < <(git log --format=%s "$base..HEAD")
+          exit "$bad"
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install 1.96 --profile minimal -c rustfmt,clippy && rustup default 1.96
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install uv==0.13.7
+      - run: uv sync --locked --python 3.12
+      - run: uv run ruff check .
+      - run: uv run black --check .
+      - run: uv run mypy
+      - run: uv run pytest
