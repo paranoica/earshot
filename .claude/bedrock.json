@@ -1,23 +1,20 @@
 {
-  "project": "bedrock",
+  "project": "earshot",
+  "packs": ["python", "typescript", "db", "api-security", "frontend", "jobs"],
+  "critical_zones": [
+    "server/src/earshot/modules/auth/**",
+    "server/src/earshot/modules/share/**",
+    "server/src/earshot/modules/ingest/**",
+    "server/src/earshot/mcp/**",
+    "daemon/src/upload/**"
+  ],
   "leaks": {
-    "allow": [
-      "claude",
-      "anthropic",
-      "paranoica"
-    ],
-    "ignore": [
-      "tests/test_leaks.py",
-      "plugins/bedrock/scripts/bedrock_lib/leaks.py"
-    ]
+    "allow": ["claude", "anthropic", "paranoica"],
+    "ignore": ["tests/test_leaks.py", "plugins/bedrock/scripts/bedrock_lib/leaks.py"]
   },
   "checks": {
-    "allow_hosts": [
-      "registry.npmjs.org",
-      "api.npmjs.org",
-      "pypi.org",
-      "pypistats.org"
-    ],
+    "file_lines": 400,
+    "allow_hosts": ["registry.npmjs.org", "api.npmjs.org", "pypi.org", "pypistats.org", "crates.io"],
     "ignore": [
       "tests/test_codecheck.py",
       "plugins/bedrock/skills/code-review/*",
@@ -27,20 +24,25 @@
   },
   "commands": {
     "test": {
-      "run": "uvx pytest -p no:cacheprovider -q -o addopts=",
+      "run": "cargo test -q --workspace && uv run --directory server pytest -q && cd tools/checks && uvx pytest -q",
       "heavy": true
     },
-    "test-related": {
-      "run": "uvx pytest -p no:cacheprovider -q -o addopts= {args}"
+    "test-server": {
+      "run": "uv run --directory server pytest -q {args}"
+    },
+    "test-daemon": {
+      "run": "cargo test -q --workspace {args}",
+      "heavy": true
     },
     "lint": {
-      "run": "uvx ruff check ."
+      "run": "cargo clippy -q --workspace --all-targets -- -D warnings && uv run --directory server ruff check . && uv run --directory server mypy"
     },
     "format": {
-      "run": "uvx black -q ."
+      "run": "cargo fmt --all && uv run --directory server black -q ."
     },
-    "skills": {
-      "run": "python3 plugins/bedrock/scripts/skillcheck.py --root plugins/bedrock --strict"
+    "template": {
+      "run": "uvx pytest -p no:cacheprovider -q -o addopts= && python3 plugins/bedrock/scripts/skillcheck.py --root plugins/bedrock --strict",
+      "heavy": true
     }
   }
 }

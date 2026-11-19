@@ -9,3 +9,10 @@ __pycache__/
 plugins/bedrock/evals/results/
 plugins/bedrock/evals-bench
 bench/results/
+
+private/
+target/
+.mypy_cache/
+node_modules/
+.claude/worktrees/
+spikes/*/results/
