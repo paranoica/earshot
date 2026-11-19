@@ -186,7 +186,10 @@ Date: 2026-11-19 · Decided by: owner
 - Decision: the repository is public. Recordings, voice samples, specs with personal detail and
   personal config live in the gitignored `private/`. Tests and CI use synthetic data only. A
   guard refuses audio and video files in git outside small synthetic fixtures.
-- Consequences: no real voice in fixtures; quality benches run locally on private data.
+- Consequences: no real voice in fixtures; quality benches run locally on private data. The
+  guard reads the git index (paths and staged blob sizes), not the working tree, so a file staged
+  and then deleted or truncated on disk is still caught. It judges by file name: a recording
+  renamed to an unrelated extension passes; content sniffing is not done.
 
 <!-- @anchor decision:no-telegram -->
 ### D-020 — No Telegram delivery
