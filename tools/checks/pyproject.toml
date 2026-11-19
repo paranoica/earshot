@@ -9,7 +9,6 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH"]
-# Russian file names are test data, not homoglyph attacks.
 allowed-confusables = ["а", "в", "е", "к", "н", "о", "р", "с", "т", "у", "х"]
 
 [tool.ruff.lint.isort]

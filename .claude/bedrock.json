@@ -35,7 +35,7 @@
       "heavy": true
     },
     "lint": {
-      "run": "cargo clippy -q --workspace --all-targets -- -D warnings && uv run --directory server ruff check . && uv run --directory server mypy"
+      "run": "cargo fmt --all --check && cargo clippy -q --workspace --all-targets -- -D warnings && uv run --directory server ruff check . && uv run --directory server black --check -q . && uv run --directory server mypy && cd tools/checks && uvx ruff@0.17.1 check . && uvx black@26.10.1 --check -q ."
     },
     "format": {
       "run": "cargo fmt --all && uv run --directory server black -q ."

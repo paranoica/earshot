@@ -72,7 +72,9 @@ Recording:
 - From the moment of detection both tracks go into an in-memory ring buffer. On **Record** the
   recording starts from the beginning of the buffer; on **Not now** or timeout the buffer is
   discarded without touching disk or network.
-- Manual start records the default output monitor and the default microphone.
+- Manual start records everything: the output monitor, the microphone (the one a call app was
+  last linked to, or the one set in the config; never blindly the system default, which on the
+  owner's PC is a webcam) and video of the monitor with the focused window.
 - If either track is silent for 30 s after start, the owner gets a notification.
 - Both tracks are written locally as Ogg Opus, mono, 24–32 kbps. These local files are the
   source of truth.
@@ -94,6 +96,8 @@ Upload:
 ### 3. Server: processing
 
 - Accepts chunks over HTTPS with the daemon's token.
+- Accepts uploaded files from the web: a phone recording, a voice message, any audio or video
+  file. They go through the same pipeline as a single mixed track (stage 1).
 - Transcribes each chunk as it arrives. The engine sits behind one interface and is chosen in
   config: faster-whisper (CUDA int8 on the PC, CPU on the VPS) by default; cloud engines optional.
 - Language is detected per chunk and per track (Russian, English, accents).
@@ -152,7 +156,8 @@ Upload:
   Recorder mp4 files with their existing transcripts and uploads them.
 - Old recordings have one mixed track, so they get ordinary diarization; the owner is identified
   by a voice sample taken from new recordings.
-- Existing cleaned transcripts are reused as text; summaries are generated fresh.
+- Existing cleaned transcripts are reused as text; summaries are generated fresh. A recording
+  without a usable transcript is processed anew.
 - Originals and intermediates are deleted only after the owner confirms, and only the recordings
   the owner chooses to keep are imported.
 
@@ -195,7 +200,8 @@ Each is an extension of the pipeline or the web, in any order after stage 3.
 ## Security
 
 - HTTPS, a token for the daemon, password and session for the admin side, API keys only in the
-  environment, an encrypted monthly backup of the archive.
+  environment, a monthly backup of the archive encrypted with age and kept on the same VPS (the
+  owner's choice; the archive itself is not encrypted at rest).
 - Share tokens cannot be guessed, can be revoked, and do not show video unless allowed.
 - Logs never contain transcript text, only identifiers and durations.
 - The repository is public: recordings, voice samples and personal configuration live only in the
