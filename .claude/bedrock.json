@@ -24,7 +24,7 @@
   },
   "commands": {
     "test": {
-      "run": "cargo test -q --workspace && uv run --directory server pytest -q && cd tools/checks && uvx pytest -q",
+      "run": "cargo test -q --workspace && uv run --directory server pytest -q && cd tools/checks && uvx pytest@9.1.1 -q",
       "heavy": true
     },
     "test-server": {

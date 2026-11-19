@@ -1,0 +1,12 @@
+{
+  "suppressions": [
+    {
+      "fingerprint": "d68ddbe249c7",
+      "category": "secrets",
+      "file_glob": "tests/__pycache__/*",
+      "quote_substr": "ghp_",
+      "reason": "fake token in vendored template test fixture, untracked pycache",
+      "ts": 1795054130.6526475
+    }
+  ]
+}

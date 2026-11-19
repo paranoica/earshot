@@ -18,14 +18,17 @@ Base path `/api/v1`. JSON unless stated otherwise.
 
 ### Errors (*implemented*)
 
-Every error answers with the HTTP status and:
+Every HTTP error (an `HTTPException`, including unknown paths and wrong methods) answers with
+the HTTP status and:
 
 ```json
 {"error": {"code": "not_found", "message": "Not Found"}}
 ```
 
 Codes so far: `not_found` (404), `method_not_allowed` (405), `http_error` (any other HTTP
-error). The set is closed: a new code is added here first. Messages are for logs and developers,
+error). The set is closed: a new code is added here first. Request validation errors (422) and
+unhandled exceptions (500) do not use the envelope yet; they join it, with the codes
+`invalid_request` and `internal`, together with the first route that takes input. Messages are for logs and developers,
 not for display.
 
 ### Health (*implemented*)

@@ -51,8 +51,8 @@ responsibility.
 
 ```
 cargo test --workspace                       # daemon
-cd server && uv run pytest                   # server
-cd tools/checks && uvx pytest                # repository guards
+uv run --directory server pytest             # server
+(cd tools/checks && uvx pytest)              # repository guards
 git config core.hooksPath .githooks          # pre-commit checks
 ```
 

@@ -122,5 +122,5 @@ worktrees, branches and caches at once.
 | Format | `bedrock cmd format` |
 | Server tests | `bedrock cmd test-server` |
 | Daemon tests | `bedrock cmd test-daemon` |
-| Repo guards | `cd tools/checks && uvx pytest` |
+| Repo guards | `cd tools/checks && uvx pytest@9.1.1` |
 | Template's own suite | `bedrock cmd template` |
