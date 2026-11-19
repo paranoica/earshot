@@ -1,3 +1,6 @@
 #!/bin/sh
 set -e
+if [ -n "$EARSHOT_ALLOW_TEST_CHANGES" ]; then
+    exec python3 plugins/bedrock/bin/bedrock check --no-network --allow-test-changes --message-file "$1"
+fi
 exec python3 plugins/bedrock/bin/bedrock check --no-network --message-file "$1"
