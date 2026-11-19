@@ -217,11 +217,11 @@ Date: 2026-11-19 · Decided by: session, accepted by owner
 
 <!-- @anchor decision:backups -->
 ### D-023 — Monthly backup, encrypted with age, kept on the same VPS
-Date: 2026-11-19 · Decided by: owner (frequency, place), session (encryption)
-- Context: the owner wants a monthly backup on the same VPS and no disk or archive encryption;
-  the details were left to the session.
+Date: 2026-11-19 · Decided by: owner (frequency, place, encryption), session (age, key handling)
+- Context: the original brief asks for an encrypted backup; during intake the owner chose a
+  monthly backup on the same VPS and no encryption of the disk or of the live call archive.
 - Decision: once a month the database (through SQLite's backup API) and the call files are packed
-  and encrypted with age to a key whose private half stays off the VPS; the archive is kept on the
-  VPS. The archive itself is not encrypted at rest.
-- Consequences: a backup copied off the VPS is unreadable without the owner's key; the backup does
-  not protect against losing the VPS itself, which the owner accepted.
+  into one backup file, encrypted with age to a key whose private half stays off the VPS, and kept
+  on the VPS. The live call archive and the disk stay unencrypted.
+- Consequences: a backup file copied off the VPS is unreadable without the owner's key; the backup
+  does not protect against losing the VPS itself, which the owner accepted.
